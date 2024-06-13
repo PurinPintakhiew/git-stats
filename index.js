@@ -28,7 +28,7 @@ app.get('/api/stats', async (req, res) => {
     res.send(buffer);
   } catch (error) {
     console.error('Error generating stats card:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(200).json({ error: 'Internal server error' });
   }
 });
 
