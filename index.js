@@ -7,30 +7,31 @@ const { getUserData } = require('./modules/getUserData');
 
 const app = express();
 
-// app.get('/api/stats', async (req, res) => {
-//   try {
-//     const username = req?.query?.username;
-//     const token = process.env.GITHUB_TOKEN;
+app.get('/api/stats', async (req, res) => {
+  try {
+    const username = req?.query?.username;
+    const token = process.env.GITHUB_TOKEN;
 
-//     if (!username || !token) {
-//       return res.status(400).json({ error: 'Username and token are required' });
-//     }
+    if (!username || !token) {
+      return res.status(400).json({ error: 'Username and token are required' });
+    }
 
-//     const userData = await getUserData(username, token);
+    const userData = await getUserData(username, token);
 
-//     if (!userData) {
-//       return res.status(404).json({ error: 'User not found or error fetching data' });
-//     }
+    if (!userData) {
+      return res.status(404).json({ error: 'User not found or error fetching data' });
+    }
 
-//     const buffer = await generateStatsCard(userData);
+    // const buffer = await generateStatsCard(userData);
 
-//     res.set('Content-Type', 'image/png');
-//     res.send(buffer);
-//   } catch (error) {
-//     console.error('Error generating stats card:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
+    // res.set('Content-Type', 'image/png');
+    // res.send(buffer);
+    return res.status(200).json({ userData: userData });
+  } catch (error) {
+    console.error('Error generating stats card:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 app.use('/', (req, res) => {
     return res.status(200).json({ message: 'Hello Everyone' });
