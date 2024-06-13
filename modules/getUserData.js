@@ -13,42 +13,42 @@ const getUserData = async (username, token) => {
             },
         });
 
-        if (!userResponse?.ok) {
+        if (!userResponse.ok) {
             throw new Error(`Failed to fetch user data: ${userResponse.statusText}`);
         }
 
-        const userData = await userResponse?.json();
+        const userData = await userResponse.json();
 
-        if (!userData?.repos_url) {
+        if (!userData.repos_url) {
             throw new Error(`Repos URL not found for user: ${username}`);
         }
 
-        const reposResponse = await fetch(userData?.repos_url, {
+        const reposResponse = await fetch(userData.repos_url, {
             headers: {
                 Authorization: `token ${token}`,
             },
         });
 
-        if (!reposResponse?.ok) {
-            throw new Error(`Failed to fetch repositories: ${reposResponse?.statusText}`);
+        if (!reposResponse.ok) {
+            throw new Error(`Failed to fetch repositories: ${reposResponse.statusText}`);
         }
 
-        const reposData = await reposResponse?.json();
+        const reposData = await reposResponse.json();
 
-        const languageCounts = reposData?.reduce((acc, repo) => {
-            if (repo?.language) {
-                acc[repo?.language] = (acc[repo?.language] || 0) + 1;
+        const languageCounts = reposData.reduce((acc, repo) => {
+            if (repo.language) {
+                acc[repo.language] = (acc[repo.language] || 0) + 1;
             }
             return acc;
         }, {});
 
-        const languages = Object.entries(languageCounts)?.map(([language, count]) => ({ language, count }));
+        const languages = Object.entries(languageCounts).map(([language, count]) => ({ language, count }));
 
-        const repoLatestTotal = reposData?.reduce((acc, repo) => {
+        const repoLatestTotal = reposData.reduce((acc, repo) => {
             const nowDate = new Date();
-            const repoDate = new Date(repo?.created_at);
+            const repoDate = new Date(repo.created_at);
 
-            if (nowDate?.getFullYear() - repoDate?.getFullYear() === 0) {
+            if (nowDate.getFullYear() - repoDate.getFullYear() === 0) {
                 acc += 1;
             }
             return acc;
@@ -56,16 +56,16 @@ const getUserData = async (username, token) => {
 
         return {
             basicData: {
-                username: userData?.login || "",
-                followers: userData?.followers || 0,
-                public_repos: userData?.public_repos || 0,
+                username: userData.login || "",
+                followers: userData.followers || 0,
+                public_repos: userData.public_repos || 0,
                 repo_latest_total: repoLatestTotal || 0,
-                join_when: ConvertDays(userData?.created_at) || "",
+                join_when: ConvertDays(userData.created_at) || "",
             },
             languages,
         };
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching user data:', error.message);
         return null;
     }
 }

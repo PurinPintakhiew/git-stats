@@ -1,40 +1,39 @@
-const express = require('express');
 require('dotenv').config();
-
-// --- libs
+const express = require('express');
 const { getUserData } = require('./modules/getUserData');
-// const { generateStatsCard } = require('./modules/generateStatsCard');
+const { generateStatsCard } = require('./modules/generateStatsCard');
+const fs = require('fs');
 
 const app = express();
 
 app.get('/api/stats', async (req, res) => {
-  try {
-    const username = req?.query?.username;
-    const token = process.env.GITHUB_TOKEN;
+  const username = req.query.username;
+  const token = process.env.GITHUB_TOKEN;  // Ensure this environment variable is set
 
-    if (!username || !token) {
-      return res.status(400).json({ error: 'Username and token are required' });
-    }
-
-    const userData = await getUserData(username, token);
-
-    if (!userData) {
-      return res.status(404).json({ error: 'User not found or error fetching data' });
-    }
-    
-    return res.status(200).json({ userData: userData });
-    // const buffer = await generateStatsCard(userData);
-
-    // res.set('Content-Type', 'image/png');
-    // res.send(buffer);
-  } catch (error) {
-    console.error('Error generating stats card:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  if (!username || !token) {
+    return res.status(400).send('Username or token is missing');
   }
+
+  const userData = await getUserData(username, token);
+
+  if (!userData) {
+    return res.status(404).send('User not found or error fetching data');
+  }
+
+  const buffer = await generateStatsCard(userData);
+
+  if (!buffer) {
+    return res.status(500).send('Error generating stats card');
+  }
+
+  fs.writeFileSync('stats.png', buffer);
+
+  res.set('Content-Type', 'image/png');
+  res.send(buffer);
 });
 
 app.use('/', (req, res) => {
-    return res.status(200).json({ message: 'Hello Everyone' });
+  return res.status(200).json({ message: 'Hello Everyone' });
 })
 
 app.use((req, res) => {
