@@ -1,0 +1,30 @@
+{
+  "name": "git-stats",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PurinPintakhiew/git-stats.git"
+  },
+  "author": "Purin Pintakhiew",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PurinPintakhiew/git-stats/issues"
+  },
+  "homepage": "https://github.com/PurinPintakhiew/git-stats#readme",
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.3"
+  }
+}
