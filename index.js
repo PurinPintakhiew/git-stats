@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const { getUserData } = require('./modules/getUserData');
 const { generateStatsCard } = require('./modules/generateStatsCard');
-const fs = require('fs');
 
 const app = express();
 
@@ -25,8 +24,6 @@ app.get('/api/stats', async (req, res) => {
   if (!buffer) {
     return res.status(500).send('Error generating stats card');
   }
-
-  fs.writeFileSync('stats.png', buffer);
 
   res.set('Content-Type', 'image/png');
   res.send(buffer);
