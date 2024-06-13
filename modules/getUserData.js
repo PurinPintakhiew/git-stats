@@ -31,6 +31,8 @@ const getUserData = async (username, token) => {
 
         const reposData = await reposResponse?.json();
 
+        return reposData;
+
         const languageCounts = reposData?.reduce((acc, repo) => {
             if (repo?.language) {
                 acc[repo?.language] = (acc[repo?.language] || 0) + 1;
