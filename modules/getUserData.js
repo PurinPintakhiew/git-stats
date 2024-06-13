@@ -10,7 +10,7 @@ const getUserData = async (username, token) => {
         });
 
         if (!userResponse?.ok) {
-            throw new Error(`Failed to fetch user data: ${userResponse?.statusText}`);
+            throw new Error(`Failed to fetch user data: ${userResponse.statusText}`);
         }
 
         const userData = await userResponse?.json();
@@ -30,8 +30,6 @@ const getUserData = async (username, token) => {
         }
 
         const reposData = await reposResponse?.json();
-
-        return reposData;
 
         const languageCounts = reposData?.reduce((acc, repo) => {
             if (repo?.language) {
