@@ -2,8 +2,8 @@ const express = require('express');
 require('dotenv').config();
 
 // --- libs
-const { getUserData } = require('./libs/getUserData');
-const { generateStatsCard } = require('./libs/generateStatsCard');
+const { getUserData } = require('./modules/getUserData');
+const { generateStatsCard } = require('./modules/generateStatsCard');
 
 const app = express();
 
