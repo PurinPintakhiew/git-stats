@@ -17,13 +17,14 @@ app.get('/api/stats', async (req, res) => {
     }
 
     const userData = await getUserData(username, token);
+    return res.status(200).json({ userData: userData });
 
     if (!userData) {
       return res.status(404).json({ error: 'User not found or error fetching data' });
     }
-
+    
     // const buffer = await generateStatsCard(userData);
-
+    
     // res.set('Content-Type', 'image/png');
     // res.send(buffer);
     return res.status(200).json({ userData: userData });
