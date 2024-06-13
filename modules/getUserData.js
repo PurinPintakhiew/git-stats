@@ -3,6 +3,10 @@ const { ConvertDays } = require('../libs/ConvertDay');
 
 const getUserData = async (username, token) => {
     try {
+        if (!username || !token) {
+            throw new Error('Username or token is missing');
+        }
+
         const userResponse = await fetch(`https://api.github.com/users/${username}`, {
             headers: {
                 Authorization: `token ${token}`,

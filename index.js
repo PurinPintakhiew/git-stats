@@ -11,24 +11,22 @@ app.get('/api/stats', async (req, res) => {
   try {
     const username = req?.query?.username;
     const token = process.env.GITHUB_TOKEN;
-    return res.status(200).json({ token: token, username: username });
 
     if (!username || !token) {
       return res.status(400).json({ error: 'Username and token are required' });
     }
 
     const userData = await getUserData(username, token);
-    return res.status(200).json({ userData: userData });
 
     if (!userData) {
       return res.status(404).json({ error: 'User not found or error fetching data' });
     }
-
+    
+    return res.status(200).json({ userData: userData });
     // const buffer = await generateStatsCard(userData);
 
     // res.set('Content-Type', 'image/png');
     // res.send(buffer);
-    return res.status(200).json({ userData: userData });
   } catch (error) {
     console.error('Error generating stats card:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -36,16 +34,16 @@ app.get('/api/stats', async (req, res) => {
 });
 
 app.use('/', (req, res) => {
-  return res.status(200).json({ message: 'Hello Everyone' });
+    return res.status(200).json({ message: 'Hello Everyone' });
 })
 
-// app.use((req, res) => {
-//   try {
-//     return res.status(404).json({ message: 'This request does not exist.' });
-//   } catch (err) {
-//     return res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// })
+app.use((req, res) => {
+  try {
+    return res.status(404).json({ message: 'This request does not exist.' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
 
 
 const PORT = process.env.PORT || 3000;
