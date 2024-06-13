@@ -32,6 +32,10 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
+app.use('/', (req, res) => {
+    return res.status(200).json({ message: 'Hello Everyone' });
+})
+
 app.use((req, res) => {
   try {
     return res.status(404).json({ message: 'This request does not exist.' });
