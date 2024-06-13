@@ -10,12 +10,10 @@ const getUserData = async (username, token) => {
         });
 
         if (!userResponse?.ok) {
-            throw new Error(`Failed to fetch user data: ${userResponse.statusText}`);
+            throw new Error(`Failed to fetch user data: ${userResponse?.statusText}`);
         }
 
         const userData = await userResponse?.json();
-
-        console.log(userData)
 
         if (!userData?.repos_url) {
             throw new Error(`Repos URL not found for user: ${username}`);
