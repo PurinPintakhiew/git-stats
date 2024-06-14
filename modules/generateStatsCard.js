@@ -1,5 +1,4 @@
-const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer-core');
+const chromium = require("chrome-aws-lambda");
 
 const languageColors = {
     JavaScript: '#f1e05a',
@@ -23,19 +22,22 @@ const languageColors = {
 };
 
 const generateStatsCard = async (userData) => {
-    let browser = null;
     try {
-        console.log('Launching browser...');
-        browser = await puppeteer.launch({
-            args: chromium.args,
+        const browser = await chromium.puppeteer.launch({
+            args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
-            headless: chromium.headless,
-        });
-        console.log('Browser launched.');
+            headless: true,
+            ignoreHTTPSErrors: true,
+        })
 
         const page = await browser.newPage();
-        console.log('New page created.');
+
+        await page.setViewport({
+            width: 650,
+            height: 275,
+            deviceScaleFactor: 1,
+        });
 
         const content = `
             <html>
@@ -125,22 +127,15 @@ const generateStatsCard = async (userData) => {
             </html>
         `;
 
-        console.log('Setting content...');
         await page.setContent(content);
-        console.log('Content set.');
-
         const buffer = await page.screenshot({ type: 'png' });
-        console.log('Screenshot taken.');
+
+        await browser.close();
 
         return buffer;
     } catch (error) {
-        console.error('Error generating stats card:', error);
+        console.error(error);
         return false;
-    } finally {
-        if (browser) {
-            await browser.close();
-            console.log('Browser closed.');
-        }
     }
 }
 
