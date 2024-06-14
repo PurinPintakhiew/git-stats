@@ -8,13 +8,12 @@ const app = express();
 app.get('/api/stats', async (req, res) => {
   try {
     const username = req?.query?.username;
-    const token = process.env.GITHUB_TOKEN;
 
-    if (!username || !token) {
-      return res.status(400).send('Username or token is missing');
+    if (!username) {
+      return res.status(400).send('Username is missing');
     }
 
-    const userData = await getUserData(username, token);
+    const userData = await getUserData(username);
 
     if (!userData) {
       return res.status(404).send('User not found or error fetching data');

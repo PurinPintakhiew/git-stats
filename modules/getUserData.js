@@ -1,17 +1,13 @@
 const fetch = require('node-fetch');
 const { ConvertDays } = require('../libs/ConvertDay');
 
-const getUserData = async (username, token) => {
+const getUserData = async (username) => {
     try {
-        if (!username || !token) {
-            throw new Error('Username or token is missing');
+        if (!username) {
+            throw new Error('Username is missing');
         }
 
-        const userResponse = await fetch(`https://api.github.com/users/${username}`, {
-            headers: {
-                Authorization: `token ${token}`,
-            },
-        });
+        const userResponse = await fetch(`https://api.github.com/users/${username}`);
 
         if (!userResponse.ok) {
             throw new Error(`Failed to fetch user data: ${userResponse.statusText}`);
@@ -23,11 +19,7 @@ const getUserData = async (username, token) => {
             throw new Error(`Repos URL not found for user: ${username}`);
         }
 
-        const reposResponse = await fetch(userData.repos_url, {
-            headers: {
-                Authorization: `token ${token}`,
-            },
-        });
+        const reposResponse = await fetch(`https://api.github.com/users/${username}/repos`);
 
         if (!reposResponse.ok) {
             throw new Error(`Failed to fetch repositories: ${reposResponse.statusText}`);
