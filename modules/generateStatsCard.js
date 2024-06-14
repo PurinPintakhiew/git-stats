@@ -1,4 +1,5 @@
-const puppeteer = require('puppeteer');
+const chromium = require('chrome-aws-lambda');
+const puppeteer = require('puppeteer-core');
 
 const languageColors = {
     JavaScript: '#f1e05a',
@@ -22,15 +23,19 @@ const languageColors = {
 };
 
 const generateStatsCard = async (userData) => {
+    let browser = null;
     try {
-        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-        const page = await browser.newPage();
-
-        await page.setViewport({
-            width: 650,
-            height: 275,
-            deviceScaleFactor: 1,
+        console.log('Launching browser...');
+        browser = await puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath,
+            headless: chromium.headless,
         });
+        console.log('Browser launched.');
+
+        const page = await browser.newPage();
+        console.log('New page created.');
 
         const content = `
             <html>
@@ -120,15 +125,22 @@ const generateStatsCard = async (userData) => {
             </html>
         `;
 
+        console.log('Setting content...');
         await page.setContent(content);
-        const buffer = await page.screenshot({ type: 'png' });
+        console.log('Content set.');
 
-        await browser.close();
+        const buffer = await page.screenshot({ type: 'png' });
+        console.log('Screenshot taken.');
 
         return buffer;
     } catch (error) {
         console.error('Error generating stats card:', error);
         return false;
+    } finally {
+        if (browser) {
+            await browser.close();
+            console.log('Browser closed.');
+        }
     }
 }
 
