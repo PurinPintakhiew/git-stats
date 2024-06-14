@@ -1,5 +1,4 @@
-const puppeteer = require('puppeteer-core');
-const chromium = require('chrome-aws-lambda');
+const { chromium } = require('playwright');
 
 const languageColors = {
     JavaScript: '#f1e05a',
@@ -26,15 +25,18 @@ const generateStatsCard = async (userData) => {
     let browser = null;
     try {
         console.log('Launching browser...');
-        browser = await puppeteer.launch({
-            args: chromium.args,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless,
+        browser = await chromium.launch({
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
         });
         console.log('Browser launched.');
 
-        const page = await browser.newPage();
-        console.log('New page created.');
+        const context = await browser.newContext();
+        const page = await context.newPage();
+
+        await page.setViewportSize({
+            width: 650,
+            height: 275,
+        });
 
         const content = `
             <html>
