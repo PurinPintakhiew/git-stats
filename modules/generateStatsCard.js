@@ -1,4 +1,4 @@
-const { createCanvas } = require('canvas');
+const puppeteer = require('puppeteer');
 
 const languageColors = {
     JavaScript: '#f1e05a',
@@ -23,65 +23,109 @@ const languageColors = {
 
 const generateStatsCard = async (userData) => {
     try {
-        const width = 800;
-        const height = 300;
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
 
-        const canvas = createCanvas(width, height);
-        const ctx = canvas.getContext('2d');
-
-        // Background
-        ctx.fillStyle = '#17202A';
-        ctx.fillRect(0, 0, width, height);
-
-        // Center line
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(width / 2, 60);
-        ctx.lineTo(width / 2, height);
-        ctx.stroke();
-
-        //  header
-        ctx.font = '22px Arial';
-        ctx.fillStyle = '#F7DC6F';
-        ctx.fillText(`⭐️`, 50, 30);
-        ctx.fillStyle = '#7FFFD4';
-        ctx.fillText(`${userData?.basicData?.username}'s GitHub Stats`, 80, 30);
-
-        // Basic data
-        ctx.fillStyle = '#fff';
-        ctx.font = '18px Arial';
-        ctx.fillText(`Join When: ${userData?.basicData?.join_when}`, 50, 80);
-        ctx.fillText(`Total Followers: ${userData?.basicData?.followers}`, 50, 110);
-        ctx.fillText(`Total Repositories: ${userData?.basicData?.public_repos}`, 50, 140);
-        ctx.fillText(`Total Repositories Latest: ${userData?.basicData?.repo_latest_total}`, 50, 170);
-
-        // Language data
-        ctx.font = '14px Arial';
-
-        const xStart = 450
-        const yStart = 80;
-        const rowHeight = 25;
-        const colWidth = 200;
-
-        userData?.languages?.forEach((item, index) => {
-            const col = index % 2;
-            const row = Math.floor(index / 2);
-            const x = xStart + col * colWidth;
-            const y = yStart + row * rowHeight;
-
-            const color = languageColors[item?.language] || '#FFFFFF';
-
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.arc(x - 10, y - 5, 5, 0, Math.PI * 2, true);
-            ctx.fill();
-            
-            ctx.fillStyle = '#fff';
-            ctx.fillText(`${item?.language}: ${((item?.count / userData?.basicData?.public_repos) * 100).toFixed(2)}%`, x, y);
+        await page.setViewport({
+            width: 650,
+            height: 275,
+            deviceScaleFactor: 1,
         });
 
-        return canvas.toBuffer();
+        const content = `
+            <html>
+            <head>
+                <style>
+                    body {
+                        width: 650px;
+                        height: 275px;
+                        background-color: #17202A;
+                        color: white;
+                        font-family: Arial, sans-serif;
+                        padding: 20px;
+                    }
+                    .header {
+                        color: #F7DC6F;
+                        font-size: 22px;
+                        margin-bottom: 10px;
+                        text-align: center;
+                    }
+                    .basic-data {
+                        border-right: 2px solid white;
+                    }
+                    .basic-data, .languages {
+                        margin-top: 20px;
+                        font-size: 18px;
+                    }
+                    .languages {
+                        margin-top: 20px;
+                        font-size: 14px
+                    }
+                    .language {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 5px;
+                    }
+                    .dot {
+                        width: 10px;
+                        height: 10px;
+                        border-radius: 50%;
+                        margin-right: 10px;
+                    }
+                    .flex-row {
+                        display: flex;
+                        flex-direction: row;
+                    }
+                    .flex-row-justify-between {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                    }
+                    .w-40 {
+                        width: 40%
+                    }
+                    .w-50 {
+                        width: 50%
+                    }
+                    .w-60 {
+                        width: 60%
+                    }
+                    .flex-wrap {
+                        flex-wrap: wrap;
+                    }
+                    .gap {
+                        gap: 1em;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">⭐️ ${userData.basicData.username}'s GitHub Stats</div>
+                <div class="flex-row gap">
+                    <div class="basic-data w-40">
+                        <div>Join When: ${userData.basicData.join_when}</div>
+                        <div>Total Followers: ${userData.basicData.followers}</div>
+                        <div>Total Repositories: ${userData.basicData.public_repos}</div>
+                        <div>Total Repositories Latest: ${userData.basicData.repo_latest_total}</div>
+                    </div>
+                    <div class="languages w-60 flex-row-justify-between flex-wrap">
+                        ${userData.languages.map(language => `
+                            <div class="language w-50">
+                                <div class="dot" style="background-color: ${languageColors[language.language] || '#FFFFFF'};"></div>
+                                <div>${language.language}: ${((language.count / userData.basicData.public_repos) * 100).toFixed(2)}%</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </body>
+            </html>
+        `;
+
+        await page.setContent(content);
+        const buffer = await page.screenshot({ type: 'png' });
+
+        await browser.close();
+
+        return buffer;
     } catch (error) {
         console.error(error);
         return false;
