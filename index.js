@@ -16,13 +16,13 @@ app.get('/api/stats', async (req, res) => {
     const userData = await getUserData(username);
 
     if (!userData) {
-      return res.status(404).json({ message: 'User not found or error fetching data' });
+      return res.status(404).json({ message: 'User not found or error fetching data', userData: userData });
     }
 
     const buffer = await generateStatsCard(userData);
 
     if (!buffer) {
-      return res.status(500).json({ message: 'Error generating stats card' });
+      return res.status(500).json({ message: 'Error generating stats card', buffer: buffer });
     }
 
     res.set('Content-Type', 'image/png');

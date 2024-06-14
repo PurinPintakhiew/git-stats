@@ -23,7 +23,7 @@ const languageColors = {
 
 const generateStatsCard = async (userData) => {
     try {
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
 
         await page.setViewport({
@@ -127,7 +127,7 @@ const generateStatsCard = async (userData) => {
 
         return buffer;
     } catch (error) {
-        console.error(error);
+        console.error('Error generating stats card:', error);
         return false;
     }
 }
