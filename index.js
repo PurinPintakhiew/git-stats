@@ -19,7 +19,7 @@ app.get('/api/stats', async (req, res) => {
       return res.status(404).send('User not found or error fetching data');
     }
 
-    return res.sendStatus(200).json({ data: userData });
+    return res.status(200).json({ data: userData });
 
     const buffer = await generateStatsCard(userData);
 
