@@ -1,5 +1,5 @@
-const chromium = require('chrome-aws-lambda');
 const puppeteer = require('puppeteer-core');
+const chromium = require('chrome-aws-lambda');
 
 const languageColors = {
     JavaScript: '#f1e05a',
@@ -28,7 +28,6 @@ const generateStatsCard = async (userData) => {
         console.log('Launching browser...');
         browser = await puppeteer.launch({
             args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
             headless: chromium.headless,
         });
@@ -115,7 +114,7 @@ const generateStatsCard = async (userData) => {
                     <div class="languages w-60 flex-row-justify-between flex-wrap">
                         ${userData?.languages?.map(language => `
                             <div class="language w-50">
-                                <div class="dot" style="background-color: ${languageColors[language?.language] || '#FFFFFF'};"></div>
+                                <div class="dot" style="background-color: ${languageColors[language.language] || '#FFFFFF'};"></div>
                                 <div>${language?.language}: ${((language?.count / userData?.basicData?.public_repos) * 100)?.toFixed(2)}%</div>
                             </div>
                         `)?.join('')}
