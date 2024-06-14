@@ -99,21 +99,21 @@ const generateStatsCard = async (userData) => {
                 </style>
             </head>
             <body>
-                <div class="header">⭐️ ${userData.basicData.username}'s GitHub Stats</div>
+                <div class="header">⭐️ ${userData?.basicData?.username}'s GitHub Stats</div>
                 <div class="flex-row gap">
                     <div class="basic-data w-40">
-                        <div>Join When: ${userData.basicData.join_when}</div>
-                        <div>Total Followers: ${userData.basicData.followers}</div>
-                        <div>Total Repositories: ${userData.basicData.public_repos}</div>
-                        <div>Total Repositories Latest: ${userData.basicData.repo_latest_total}</div>
+                        <div>Join When: ${userData?.basicData?.join_when}</div>
+                        <div>Total Followers: ${userData?.basicData?.followers}</div>
+                        <div>Total Repositories: ${userData?.basicData?.public_repos}</div>
+                        <div>Total Repositories Latest: ${userData?.basicData?.repo_latest_total}</div>
                     </div>
                     <div class="languages w-60 flex-row-justify-between flex-wrap">
-                        ${userData.languages.map(language => `
+                        ${userData?.languages?.map(language => `
                             <div class="language w-50">
                                 <div class="dot" style="background-color: ${languageColors[language.language] || '#FFFFFF'};"></div>
-                                <div>${language.language}: ${((language.count / userData.basicData.public_repos) * 100).toFixed(2)}%</div>
+                                <div>${language?.language}: ${((language?.count / userData?.basicData?.public_repos) * 100)?.toFixed(2)}%</div>
                             </div>
-                        `).join('')}
+                        `)?.join('')}
                     </div>
                 </div>
             </body>
