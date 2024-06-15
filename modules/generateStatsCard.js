@@ -1,4 +1,4 @@
-const { chromium } = require('playwright');
+const playwright = require('playwright');
 
 const languageColors = {
     JavaScript: '#f1e05a',
@@ -22,20 +22,14 @@ const languageColors = {
 };
 
 const generateStatsCard = async (userData) => {
-    let browser = null;
     try {
-        console.log('Launching browser...');
-        browser = await chromium.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        });
-        console.log('Browser launched.');
-
+        const browser = await playwright.chromium.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const context = await browser.newContext();
         const page = await context.newPage();
 
         await page.setViewportSize({
             width: 650,
-            height: 275,
+            height: 275
         });
 
         const content = `
@@ -116,7 +110,7 @@ const generateStatsCard = async (userData) => {
                     <div class="languages w-60 flex-row-justify-between flex-wrap">
                         ${userData?.languages?.map(language => `
                             <div class="language w-50">
-                                <div class="dot" style="background-color: ${languageColors[language.language] || '#FFFFFF'};"></div>
+                                <div class="dot" style="background-color: ${languageColors[language?.language] || '#FFFFFF'};"></div>
                                 <div>${language?.language}: ${((language?.count / userData?.basicData?.public_repos) * 100)?.toFixed(2)}%</div>
                             </div>
                         `)?.join('')}
@@ -126,22 +120,15 @@ const generateStatsCard = async (userData) => {
             </html>
         `;
 
-        console.log('Setting content...');
         await page.setContent(content);
-        console.log('Content set.');
-
         const buffer = await page.screenshot({ type: 'png' });
-        console.log('Screenshot taken.');
+
+        await browser.close();
 
         return buffer;
     } catch (error) {
         console.error('Error generating stats card:', error);
         return false;
-    } finally {
-        if (browser) {
-            await browser.close();
-            console.log('Browser closed.');
-        }
     }
 }
 
