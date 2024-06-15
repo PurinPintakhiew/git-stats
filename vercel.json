@@ -3,16 +3,13 @@
   "builds": [
     {
       "src": "index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["node_modules/playwright-core/.local-browsers/**"]
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/"
+      "src": "/api/(.*)",
+      "dest": "/index.js"
     }
   ]
 }

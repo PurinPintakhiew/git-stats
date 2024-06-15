@@ -35,7 +35,7 @@ app.get('/api/stats', async (req, res) => {
 
 app.use('/', (req, res) => {
   return res.status(200).json({ message: 'Hello Everyone' });
-})
+});
 
 app.use((req, res) => {
   try {
@@ -43,7 +43,7 @@ app.use((req, res) => {
   } catch (err) {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
-})
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
