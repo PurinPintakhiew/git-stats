@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const { getUserData } = require('./modules/getUserData');
-const { generateStatsCard } = require('./modules/generateStatsCard');
+const { generateStatsCard } = require('./modules/generateStats');
 
 const app = express();
 
