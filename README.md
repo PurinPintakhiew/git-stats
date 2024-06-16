@@ -1,7 +1,7 @@
 # git-stats
 
 ### 🪄 How to use
-<p>How to use: Put this code in your README.md file.</p>
+<p>How to use: Place this code in your README.md file by passing your GitHub username in the URL.</p>
 
 ```
 ![Username is Github stats](http://git-stats-profile.vercel.app/api/stats/?username=PurinPintakhiew)
