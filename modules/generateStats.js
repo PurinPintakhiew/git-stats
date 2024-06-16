@@ -1,4 +1,5 @@
 const sharp = require('sharp');
+const path = require('path');
 
 const languageColors = {
     JavaScript: '#f1e05a',
@@ -36,29 +37,33 @@ const generateStatsCard = async (userData) => {
         // Prepare SVG text
         const svgText = Buffer.from(`
             <svg width="650" height="275" xmlns="http://www.w3.org/2000/svg">
-                <text x="325" y="40" text-anchor="middle" fill="#F7DC6F" font-family="Geist, sans-serif" font-size="20">
+                <style>
+                    @font-face {
+                        font-family: 'MyCustomFont';
+                        src: url('${path.resolve('public/fonts/LibreBaskerville-Regular.ttf')}') format('truetype');
+                    }
+                    text {
+                        font-family: 'MyCustomFont', Arial, sans-serif;
+                    }
+                </style>
+                <text x="325" y="40" text-anchor="middle" fill="#F7DC6F" font-size="20">
                     ${userData?.basicData?.username}'s GitHub Stats
-                </text>
-                <text>
-                    <textPath id="text" className="textPath" href="#circle">
-                        <tspan x="0" dy="1em">Made with</tspan>
-                    </textPath>
                 </text>
             </svg>
         `);
 
         // Prepare basic data SVG
         const basicDataSvg = Buffer.from(`<svg width="260" height="275" xmlns="http://www.w3.org/2000/svg">
-            <text x="20" y="80" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="14">
+            <text x="20" y="80" fill="#FDFEFE" font-size="18">
                 Join When: ${userData?.basicData?.join_when}
             </text>
-            <text x="20" y="110" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="14">
+            <text x="20" y="110" fill="#FDFEFE" font-size="18">
                 Total Followers: ${userData?.basicData?.followers}
             </text>
-            <text x="20" y="140" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="14">
+            <text x="20" y="140" fill="#FDFEFE" font-size="18">
                 Total Repositories: ${userData?.basicData?.public_repos}
             </text>
-            <text x="20" y="170" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="14">
+            <text x="20" y="170" fill="#FDFEFE" font-size="18">
                 Total Repositories Latest: ${userData?.basicData?.repo_latest_total}
             </text>
         </svg>`);
@@ -71,7 +76,7 @@ const generateStatsCard = async (userData) => {
         // Prepare languages SVG for the first row
         const languagesTextFirstRow = languagesFirstRow?.map((item, index) => `
             <circle cx="20" cy="${80 + index * 20}" r="5" fill="${languageColors[item?.language] || '#FFFFFF'}" />
-            <text x="40" y="${85 + index * 20}" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="12">
+            <text x="40" y="${85 + index * 20}" fill="#FDFEFE" font-size="14">
                 ${item?.language}: ${((item.count / userData?.basicData?.public_repos) * 100).toFixed(2)}%
             </text>
         `).join('');
@@ -82,8 +87,8 @@ const generateStatsCard = async (userData) => {
 
         // Prepare languages SVG for the second row
         const languagesTextSecondRow = languagesSecondRow?.map((item, index) => `
-            <circle cx="20" cy="${80 + index * 20}" r="5" fill="${languageColors[item.language] || '#FFFFFF'}" />
-            <text x="40" y="${85 + index * 20}" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="12">
+            <circle cx="20" cy="${80 + index * 20}" r="5" fill="${languageColors[item?.language] || '#FFFFFF'}" />
+            <text x="40" y="${85 + index * 20}" fill="#FDFEFE" font-size="14">
                 ${item.language}: ${((item.count / userData?.basicData?.public_repos) * 100).toFixed(2)}%
             </text>
         `).join('');
