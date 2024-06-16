@@ -11,7 +11,7 @@ const languageColors = {
     TypeScript: '#2b7489',
     Shell: '#89e051',
     Go: '#00ADD8',
-    Kotlin: '#F18E33',
+    Kotlin: '#F14E33',
     HTML: '#e34c26',
     CSS: '#563d7c',
     Swift: '#ffac45',
@@ -33,29 +33,29 @@ const generateStatsCard = async (userData) => {
             }
         });
 
-        // Prepare SVG textPath
-        const svgtextPath = Buffer.from(`
+        // Prepare SVG text
+        const svgText = Buffer.from(`
             <svg width="650" height="275" xmlns="http://www.w3.org/2000/svg">
-                <textPath x="325" y="40" textPath-anchor="middle" fill="#F7DC6F" font-family="Arial, sans-serif" font-size="22">
+                <text x="325" y="40" text-anchor="middle" fill="#F7DC6F" font-family="Geist, sans-serif" font-size="20">
                     ${userData?.basicData?.username}'s GitHub Stats
-                </textPath>
+                </text>
             </svg>
         `);
 
         // Prepare basic data SVG
         const basicDataSvg = Buffer.from(`<svg width="260" height="275" xmlns="http://www.w3.org/2000/svg">
-            <textPath x="20" y="80" fill="#FDFEFE" font-family="Arial, sans-serif" font-size="18">
+            <text x="20" y="80" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="14">
                 Join When: ${userData?.basicData?.join_when}
-            </textPath>
-            <textPath x="20" y="110" fill="#FDFEFE" font-family="Arial, sans-serif" font-size="18">
+            </text>
+            <text x="20" y="110" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="14">
                 Total Followers: ${userData?.basicData?.followers}
-            </textPath>
-            <textPath x="20" y="140" fill="#FDFEFE" font-family="Arial, sans-serif" font-size="18">
+            </text>
+            <text x="20" y="140" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="14">
                 Total Repositories: ${userData?.basicData?.public_repos}
-            </textPath>
-            <textPath x="20" y="170" fill="#FDFEFE" font-family="Arial, sans-serif" font-size="18">
+            </text>
+            <text x="20" y="170" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="14">
                 Total Repositories Latest: ${userData?.basicData?.repo_latest_total}
-            </textPath>
+            </text>
         </svg>`);
 
         // Calculate midpoint for splitting the languages array
@@ -64,27 +64,27 @@ const generateStatsCard = async (userData) => {
         const languagesSecondRow = userData?.languages?.slice(midpoint);
 
         // Prepare languages SVG for the first row
-        const languagestextPathFirstRow = languagesFirstRow?.map((item, index) => `
+        const languagesTextFirstRow = languagesFirstRow?.map((item, index) => `
             <circle cx="20" cy="${80 + index * 20}" r="5" fill="${languageColors[item?.language] || '#FFFFFF'}" />
-            <textPath x="40" y="${85 + index * 20}" fill="#FDFEFE" font-family="Arial, sans-serif" font-size="14">
+            <text x="40" y="${85 + index * 20}" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="12">
                 ${item?.language}: ${((item.count / userData?.basicData?.public_repos) * 100).toFixed(2)}%
-            </textPath>
+            </text>
         `).join('');
 
         const languagesSvgFirstRow = Buffer.from(`<svg width="325" height="275" xmlns="http://www.w3.org/2000/svg">
-            ${languagestextPathFirstRow}
+            ${languagesTextFirstRow}
         </svg>`);
 
         // Prepare languages SVG for the second row
-        const languagestextPathSecondRow = languagesSecondRow?.map((item, index) => `
+        const languagesTextSecondRow = languagesSecondRow?.map((item, index) => `
             <circle cx="20" cy="${80 + index * 20}" r="5" fill="${languageColors[item.language] || '#FFFFFF'}" />
-            <textPath x="40" y="${85 + index * 20}" fill="#FDFEFE" font-family="Arial, sans-serif" font-size="14">
+            <text x="40" y="${85 + index * 20}" fill="#FDFEFE" font-family="Geist, sans-serif" font-size="12">
                 ${item.language}: ${((item.count / userData?.basicData?.public_repos) * 100).toFixed(2)}%
-            </textPath>
+            </text>
         `).join('');
 
         const languagesSvgSecondRow = Buffer.from(`<svg width="325" height="275" xmlns="http://www.w3.org/2000/svg">
-            ${languagestextPathSecondRow}
+            ${languagesTextSecondRow}
         </svg>`);
 
         // Prepare divider SVG
@@ -95,7 +95,7 @@ const generateStatsCard = async (userData) => {
         // Composite the SVGs over the base image
         const buffer = await image
             .composite([
-                { input: svgtextPath, top: 10, left: 0 },
+                { input: svgText, top: 10, left: 0 },
                 { input: basicDataSvg, top: 20, left: 10 },
                 { input: dividerSvg, top: 70, left: 285 },
                 { input: languagesSvgFirstRow, top: 15, left: 290 },
