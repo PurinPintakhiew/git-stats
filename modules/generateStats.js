@@ -39,6 +39,11 @@ const generateStatsCard = async (userData) => {
                 <text x="325" y="40" text-anchor="middle" fill="#F7DC6F" font-family="Geist, sans-serif" font-size="20">
                     ${userData?.basicData?.username}'s GitHub Stats
                 </text>
+                <text>
+                    <textPath id="text" className="textPath" href="#circle">
+                        <tspan x="0" dy="1em">Made with</tspan>
+                    </textPath>
+                </text>
             </svg>
         `);
 
