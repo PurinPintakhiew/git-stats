@@ -184,7 +184,7 @@ const generateStatsCanvas = async (userData) => {
             ctx.fillText(`${item?.language}: ${((item?.count / userData?.basicData?.public_repos) * 100).toFixed(2)}%`, x, y);
         });
 
-        return canvas.toBuffer();
+        return await canvas.toBuffer();
     } catch (error) {
         console.error(error);
         return false;
