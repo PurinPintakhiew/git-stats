@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "npx playwright install --with-deps",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js"
@@ -23,7 +22,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "node-fetch": "^2.7.0",
-    "playwright": "^1.44.1"
+    "sharp": "^0.33.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.3"
