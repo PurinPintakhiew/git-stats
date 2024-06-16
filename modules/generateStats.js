@@ -149,12 +149,10 @@ const generateStatsCanvas = async (userData) => {
 
         // Header
         ctx.font = '22px "Libre Baskerville", Arial';
-        ctx.fillStyle = '#F7DC6F';
+        ctx.fillStyle = '#FFD700';
         const headerText = `${userData?.basicData?.username}'s GitHub Stats`;
         const textWidth = ctx.measureText(headerText).width;
         const xPosition = (width - textWidth) / 2;
-        ctx.fillText(`⭐️`, xPosition - 30, 30); // Adjusted to place the star icon before the text
-        ctx.fillStyle = '#7FFFD4';
         ctx.fillText(headerText, xPosition, 30)
 
         // Basic data
