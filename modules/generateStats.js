@@ -129,7 +129,7 @@ const generateStatsSharp = async (userData) => {
 
 const generateStatsCanvas = async (userData) => {
     try {
-        const width = 800;
+        const width = 650;
         const height = 300;
 
         const canvas = createCanvas(width, height);
@@ -150,25 +150,28 @@ const generateStatsCanvas = async (userData) => {
         // Header
         ctx.font = '22px "Libre Baskerville", Arial';
         ctx.fillStyle = '#F7DC6F';
-        ctx.fillText(`⭐️`, 50, 30);
+        const headerText = `${userData?.basicData?.username}'s GitHub Stats`;
+        const textWidth = ctx.measureText(headerText).width;
+        const xPosition = (width - textWidth) / 2;
+        ctx.fillText(`⭐️`, xPosition - 30, 30); // Adjusted to place the star icon before the text
         ctx.fillStyle = '#7FFFD4';
-        ctx.fillText(`${userData?.basicData?.username}'s GitHub Stats`, 80, 30);
+        ctx.fillText(headerText, xPosition, 30)
 
         // Basic data
         ctx.fillStyle = '#fff';
         ctx.font = '18px "Libre Baskerville", Arial';
-        ctx.fillText(`Join When: ${userData?.basicData?.join_when}`, 50, 80);
-        ctx.fillText(`Total Followers: ${userData?.basicData?.followers}`, 50, 110);
-        ctx.fillText(`Total Repositories: ${userData?.basicData?.public_repos}`, 50, 140);
-        ctx.fillText(`Total Repositories Latest: ${userData?.basicData?.repo_latest_total}`, 50, 170);
+        ctx.fillText(`Join When: ${userData?.basicData?.join_when}`, 40, 80);
+        ctx.fillText(`Total Followers: ${userData?.basicData?.followers}`, 40, 110);
+        ctx.fillText(`Total Repositories: ${userData?.basicData?.public_repos}`, 40, 140);
+        ctx.fillText(`Total Repositories Latest: ${userData?.basicData?.repo_latest_total}`, 40, 170);
 
         // Language data
         ctx.font = '14px "Libre Baskerville", Arial';
 
-        const xStart = 450;
+        const xStart = 350;
         const yStart = 80;
         const rowHeight = 25;
-        const colWidth = 200;
+        const colWidth = 155;
 
         userData?.languages?.forEach((item, index) => {
             const col = index % 2;

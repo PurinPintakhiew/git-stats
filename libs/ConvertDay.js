@@ -17,7 +17,7 @@ const ConvertDays = (date, type = "dd/mm/yy") => {
 
     switch (type) {
         case "dd/mm/yy":
-            return `${addZero(newdate.getDate())}/${addZero(newdate.getMonth() + 1)}/${newdate.getFullYear()}`;
+            return `${addZero(newdate.getDate())} / ${addZero(newdate.getMonth() + 1)} / ${newdate.getFullYear()}`;
         case "dd-mm-yy":
             return `${addZero(newdate.getDate())}-${addZero(newdate.getMonth() + 1)}-${newdate.getFullYear()}`;
         case "dd/mm/yy hh:mm:ss":
