@@ -1,5 +1,6 @@
 const sharp = require('sharp');
 const path = require('path');
+const fs = require('fs');
 
 const languageColors = {
     JavaScript: '#f1e05a',
@@ -22,42 +23,6 @@ const languageColors = {
     Dart: '#00B4AB'
 };
 
-const convertTextToPath = (text) => {
-    if (!text) return '';
-
-    const pathElems = [];
-
-    // Process each <text> element
-    text.match(/<text[^>]*>.*?<\/text>/gs)?.forEach(textElem => {
-        // Extract attributes from <text> element
-        const xMatch = textElem.match(/x="([^"]*)"/);
-        const yMatch = textElem.match(/y="([^"]*)"/);
-        const fillMatch = textElem.match(/fill="([^"]*)"/);
-        const fontSizeMatch = textElem.match(/font-size="([^"]*)"/);
-        const fontFamilyMatch = textElem.match(/font-family="([^"]*)"/);
-
-        if (xMatch && yMatch && fillMatch && fontSizeMatch && fontFamilyMatch) {
-            const x = parseFloat(xMatch[1]);
-            const y = parseFloat(yMatch[1]);
-            const fill = fillMatch[1];
-            const fontSize = parseFloat(fontSizeMatch[1]);
-            const fontFamily = fontFamilyMatch[1];
-
-            // Extract text content
-            const textContentMatch = textElem.match(/<text[^>]*>(.*?)<\/text>/s);
-            if (textContentMatch) {
-                const textContent = textContentMatch[1];
-
-                // Convert <text> to <path>
-                const pathElem = `<path fill="${fill}" d="M${x},${y} h${fontSize * textContent.length}" font-family="${fontFamily}">${textContent}</path>`;
-                pathElems.push(pathElem);
-            }
-        }
-    });
-
-    return pathElems.join('');
-}
-
 const generateStatsCard = async (userData) => {
     try {
         // Create a base image
@@ -73,15 +38,17 @@ const generateStatsCard = async (userData) => {
         // Prepare SVG text with embedded custom font
         const svgText = Buffer.from(`
             <svg width="650" height="275" xmlns="http://www.w3.org/2000/svg">
-                <style>
-                    @font-face {
-                        font-family: 'MyCustomFont';
-                        src: url('${path.resolve('public/fonts/LibreBaskerville-Regular.ttf')}') format('truetype');
-                    }
-                    text {
-                        font-family: 'MyCustomFont', Arial, sans-serif;
-                    }
-                </style>
+                <defs>
+                    <style>
+                        @font-face {
+                            font-family: 'MyCustomFont';
+                            src: url('${path.resolve('public/fonts/LibreBaskerville-Regular.ttf')}') format('truetype');
+                        }
+                        text {
+                            font-family: 'MyCustomFont', Arial, sans-serif;
+                        }
+                    </style>
+                </defs>
                 <text x="325" y="40" text-anchor="middle" fill="#F7DC6F" font-size="20">
                     ${userData?.basicData?.username}'s GitHub Stats
                 </text>
@@ -90,20 +57,18 @@ const generateStatsCard = async (userData) => {
 
         // Prepare basic data SVG
         const basicDataSvg = Buffer.from(`<svg width="260" height="275" xmlns="http://www.w3.org/2000/svg">
-            ${convertTextToPath(`
-                <text x="20" y="80" fill="#FDFEFE" font-size="18">
-                    Join When: ${userData?.basicData?.join_when}
-                </text>
-                <text x="20" y="110" fill="#FDFEFE" font-size="18">
-                    Total Followers: ${userData?.basicData?.followers}
-                </text>
-                <text x="20" y="140" fill="#FDFEFE" font-size="18">
-                    Total Repositories: ${userData?.basicData?.public_repos}
-                </text>
-                <text x="20" y="170" fill="#FDFEFE" font-size="18">
-                    Total Repositories Latest: ${userData?.basicData?.repo_latest_total}
-                </text>
-            `)}
+            <text x="20" y="80" fill="#FDFEFE" font-size="18">
+                Join When: ${userData?.basicData?.join_when}
+            </text>
+            <text x="20" y="110" fill="#FDFEFE" font-size="18">
+                Total Followers: ${userData?.basicData?.followers}
+            </text>
+            <text x="20" y="140" fill="#FDFEFE" font-size="18">
+                Total Repositories: ${userData?.basicData?.public_repos}
+            </text>
+            <text x="20" y="170" fill="#FDFEFE" font-size="18">
+                Total Repositories Latest: ${userData?.basicData?.repo_latest_total}
+            </text>
         </svg>`);
 
         // Calculate midpoint for splitting the languages array
@@ -120,7 +85,7 @@ const generateStatsCard = async (userData) => {
         `).join('');
 
         const languagesSvgFirstRow = Buffer.from(`<svg width="325" height="275" xmlns="http://www.w3.org/2000/svg">
-            ${convertTextToPath(languagesTextFirstRow)}
+            ${languagesTextFirstRow}
         </svg>`);
 
         // Prepare languages SVG for the second row
@@ -132,7 +97,7 @@ const generateStatsCard = async (userData) => {
         `).join('');
 
         const languagesSvgSecondRow = Buffer.from(`<svg width="325" height="275" xmlns="http://www.w3.org/2000/svg">
-            ${convertTextToPath(languagesTextSecondRow)}
+            ${languagesTextSecondRow}
         </svg>`);
 
         // Prepare divider SVG
