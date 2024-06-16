@@ -1,6 +1,9 @@
 const sharp = require('sharp');
-const { createCanvas } = require('canvas');
+const { createCanvas, registerFont } = require('canvas');
 const path = require('path');
+
+// Register the custom font
+registerFont(path.resolve('public/fonts/LibreBaskerville-Regular.ttf'), { family: 'Libre Baskerville' });
 
 const languageColors = {
     JavaScript: '#f1e05a',
@@ -145,7 +148,7 @@ const generateStatsCanvas = async (userData) => {
         ctx.stroke();
 
         // Header
-        ctx.font = '22px Arial';
+        ctx.font = '22px "Libre Baskerville", Arial';
         ctx.fillStyle = '#F7DC6F';
         ctx.fillText(`⭐️`, 50, 30);
         ctx.fillStyle = '#7FFFD4';
@@ -153,16 +156,16 @@ const generateStatsCanvas = async (userData) => {
 
         // Basic data
         ctx.fillStyle = '#fff';
-        ctx.font = '18px Arial';
+        ctx.font = '18px "Libre Baskerville", Arial';
         ctx.fillText(`Join When: ${userData?.basicData?.join_when}`, 50, 80);
         ctx.fillText(`Total Followers: ${userData?.basicData?.followers}`, 50, 110);
         ctx.fillText(`Total Repositories: ${userData?.basicData?.public_repos}`, 50, 140);
         ctx.fillText(`Total Repositories Latest: ${userData?.basicData?.repo_latest_total}`, 50, 170);
 
         // Language data
-        ctx.font = '14px Arial';
+        ctx.font = '14px "Libre Baskerville", Arial';
 
-        const xStart = 450
+        const xStart = 450;
         const yStart = 80;
         const rowHeight = 25;
         const colWidth = 200;
@@ -185,13 +188,12 @@ const generateStatsCanvas = async (userData) => {
         });
 
         // Generate buffer
-        const buffer = await canvas.toBuffer('image/png');
+        const buffer = canvas.toBuffer('image/png');
         return buffer;
     } catch (error) {
         console.error(error);
         return false;
     }
 };
-
 
 module.exports = { generateStatsSharp, generateStatsCanvas };
