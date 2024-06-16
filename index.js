@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const { getUserData } = require('./modules/getUserData');
-const { generateStatsCard } = require('./modules/generateStats');
+const { generateStatsSharp, generateStatsCanvas } = require('./modules/generateStats');
 
 const app = express();
 
@@ -67,7 +67,7 @@ app.get('/api/stats', async (req, res) => {
       return res.status(404).json({ message: 'User not found or error fetching data', userData: userData });
     }
 
-    const buffer = await generateStatsCard(userData);
+    const buffer = await generateStatsCanvas(userData);
 
     if (!buffer) {
       return res.status(500).json({ message: 'Error generating stats card', buffer: buffer });
