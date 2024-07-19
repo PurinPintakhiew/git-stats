@@ -7,7 +7,7 @@ const { generateStatsCanvas } = require('./modules/generateStats');
 const app = express();
 
 app.use(cors({
-  origin: 'https://github.com/',
+  origin: 'https://github.com',
   optionsSuccessStatus: 200,
 }));
 
