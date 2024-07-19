@@ -1,9 +1,15 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const { getUserData } = require('./modules/getUserData');
-const { generateStatsCanvas } = require('./modules/generateStats'); // Assuming generateStatsCanvas is the correct function
+const { generateStatsCanvas } = require('./modules/generateStats');
 
 const app = express();
+
+app.use(cors({
+  origin: 'https://github.com/',
+  optionsSuccessStatus: 200,
+}));
 
 app.get('/api/stats', async (req, res) => {
   try {
@@ -14,7 +20,7 @@ app.get('/api/stats', async (req, res) => {
     }
 
     const userData = await getUserData(username);
-    
+
     if (!userData) {
       return res.status(404).json({ message: 'User not found or error fetching data' });
     }
