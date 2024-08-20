@@ -1,6 +1,8 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+
+// --- modules
 const { getUserData } = require('./modules/getUserData');
 const { generateStatsCanvas } = require('./modules/generateStats');
 
@@ -10,6 +12,16 @@ app.use(cors({
   origin: 'https://github.com',
   optionsSuccessStatus: 200,
 }));
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(limiter);
 
 app.get('/api/stats', async (req, res) => {
   try {
@@ -51,7 +63,7 @@ app.use((req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
