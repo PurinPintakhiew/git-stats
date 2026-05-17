@@ -87,7 +87,7 @@ const generateStatsCanvas = async (userData) => {
 
             // Card
             ctx.fillStyle = 'rgba(255,255,255,0.05)';
-            roundRect(ctx, 45, y, 320, 45, 14, true);
+            roundRect(ctx, 45, y, 320, 50, 14, true);
 
             // Title
             ctx.font = '15px "Libre Baskerville"';
