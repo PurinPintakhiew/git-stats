@@ -97,7 +97,7 @@ const generateStatsCanvas = async (userData) => {
             // Value
             ctx.font = 'bold 18px "Libre Baskerville"';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(String(item.value), 65, y + 38);
+            ctx.fillText(String(item.value), 65, y + 42);
         });
 
         ctx.fillStyle = 'rgba(255,255,255,0.04)';
@@ -147,7 +147,6 @@ const generateStatsCanvas = async (userData) => {
 
         ctx.font = '13px "Libre Baskerville"';
         ctx.fillStyle = 'rgba(255,255,255,0.45)';
-        ctx.fillText('Generated dynamically with Canvas API', 50, height - 35);
 
         return canvas.toBuffer('image/png');
     } catch (error) {
