@@ -2,199 +2,185 @@ const sharp = require('sharp');
 const { createCanvas, registerFont } = require('canvas');
 const path = require('path');
 
-// Register the custom font
+// Register Font
 registerFont(path.resolve('public/fonts/LibreBaskerville-Regular.ttf'), { family: 'Libre Baskerville' });
 
 const languageColors = {
-    JavaScript: '#f1e05a',
+    JavaScript: '#f7df1e',
+    TypeScript: '#3178c6',
     Python: '#3572A5',
     Java: '#b07219',
     'C++': '#f34b7d',
     'C#': '#178600',
     Ruby: '#701516',
-    PHP: '#4F5D95',
-    TypeScript: '#2b7489',
+    PHP: '#777BB4',
     Shell: '#89e051',
     Go: '#00ADD8',
-    Kotlin: '#F14E33',
+    Kotlin: '#A97BFF',
     HTML: '#e34c26',
     CSS: '#563d7c',
     Swift: '#ffac45',
-    'Objective-C': '#438eff',
-    R: '#198CE7',
     Rust: '#dea584',
     Dart: '#00B4AB'
 };
 
-const generateStatsSharp = async (userData) => {
-    try {
-        // Create a base image
-        const image = sharp({
-            create: {
-                width: 650,
-                height: 275,
-                channels: 4,
-                background: { r: 23, g: 32, b: 42, alpha: 1 }
-            }
-        });
-
-        // Prepare SVG text with embedded custom font
-        const svgText = Buffer.from(`
-            <svg width="650" height="275" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <style>
-                        @font-face {
-                            font-family: 'MyCustomFont';
-                            src: url('${path.resolve('public/fonts/LibreBaskerville-Regular.ttf')}') format('truetype');
-                        }
-                        text {
-                            font-family: 'MyCustomFont', Arial, sans-serif;
-                        }
-                    </style>
-                </defs>
-                <text x="325" y="40" text-anchor="middle" fill="#F7DC6F" font-size="20">
-                    ${userData?.basicData?.username}'s GitHub Stats
-                </text>
-            </svg>
-        `);
-
-        // Prepare basic data SVG
-        const basicDataSvg = Buffer.from(`<svg width="260" height="275" xmlns="http://www.w3.org/2000/svg">
-            <text x="20" y="80" fill="#FDFEFE" font-size="18">
-                Join When: ${userData?.basicData?.join_when}
-            </text>
-            <text x="20" y="110" fill="#FDFEFE" font-size="18">
-                Total Followers: ${userData?.basicData?.followers}
-            </text>
-            <text x="20" y="140" fill="#FDFEFE" font-size="18">
-                Total Repositories: ${userData?.basicData?.public_repos}
-            </text>
-            <text x="20" y="170" fill="#FDFEFE" font-size="18">
-                Total Repositories Latest: ${userData?.basicData?.repo_latest_total}
-            </text>
-        </svg>`);
-
-        // Calculate midpoint for splitting the languages array
-        const midpoint = Math.ceil(userData?.languages?.length / 2);
-        const languagesFirstRow = userData?.languages?.slice(0, midpoint);
-        const languagesSecondRow = userData?.languages?.slice(midpoint);
-
-        // Prepare languages SVG for the first row
-        const languagesTextFirstRow = languagesFirstRow?.map((item, index) => `
-            <circle cx="20" cy="${80 + index * 20}" r="5" fill="${languageColors[item?.language] || '#FFFFFF'}" />
-            <text x="40" y="${85 + index * 20}" fill="#FDFEFE" font-size="14">
-                ${item?.language}: ${((item.count / userData?.basicData?.public_repos) * 100).toFixed(2)}%
-            </text>
-        `).join('');
-
-        const languagesSvgFirstRow = Buffer.from(`<svg width="325" height="275" xmlns="http://www.w3.org/2000/svg">
-            ${languagesTextFirstRow}
-        </svg>`);
-
-        // Prepare languages SVG for the second row
-        const languagesTextSecondRow = languagesSecondRow?.map((item, index) => `
-            <circle cx="20" cy="${80 + index * 20}" r="5" fill="${languageColors[item?.language] || '#FFFFFF'}" />
-            <text x="40" y="${85 + index * 20}" fill="#FDFEFE" font-size="14">
-                ${item.language}: ${((item.count / userData?.basicData?.public_repos) * 100).toFixed(2)}%
-            </text>
-        `).join('');
-
-        const languagesSvgSecondRow = Buffer.from(`<svg width="325" height="275" xmlns="http://www.w3.org/2000/svg">
-            ${languagesTextSecondRow}
-        </svg>`);
-
-        // Prepare divider SVG
-        const dividerSvg = Buffer.from(`<svg width="2" height="200" xmlns="http://www.w3.org/2000/svg">
-            <line x1="1" y1="0" x2="1" y2="275" stroke="#FFFFFF" stroke-width="2"/>
-        </svg>`);
-
-        // Composite the SVGs over the base image
-        const buffer = await image
-            .composite([
-                { input: svgText, top: 10, left: 0 },
-                { input: basicDataSvg, top: 20, left: 10 },
-                { input: dividerSvg, top: 70, left: 285 },
-                { input: languagesSvgFirstRow, top: 15, left: 290 },
-                { input: languagesSvgSecondRow, top: 15, left: 460 }
-            ])
-            .png()
-            .toBuffer();
-
-        return buffer;
-    } catch (error) {
-        console.error('Error generating stats card:', error);
-        return false;
-    }
+const formatPercent = (count, total) => {
+    if (!total) return '0%';
+    return `${((count / total) * 100).toFixed(1)}%`;
 };
 
 const generateStatsCanvas = async (userData) => {
     try {
-        const width = 650;
-        const height = 300;
+        const width = 900;
+        const height = 420;
 
         const canvas = createCanvas(width, height);
         const ctx = canvas.getContext('2d');
 
-        // Background
-        ctx.fillStyle = '#17202A';
+        const bg = ctx.createLinearGradient(0, 0, width, height);
+        bg.addColorStop(0, '#0f172a');
+        bg.addColorStop(1, '#1e293b');
+
+        ctx.fillStyle = bg;
         ctx.fillRect(0, 0, width, height);
 
-        // Center line
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(width / 2, 60);
-        ctx.lineTo(width / 2, 200);
-        ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.06)';
+        roundRect(ctx, 25, 25, width - 50, height - 50, 24, true);
 
-        // Header
-        ctx.font = '22px "Libre Baskerville", Arial';
-        ctx.fillStyle = '#FFD700';
-        const headerText = `${userData?.basicData?.username}'s GitHub Stats`;
-        const textWidth = ctx.measureText(headerText).width;
-        const xPosition = (width - textWidth) / 2;
-        ctx.fillText(headerText, xPosition, 30)
+        ctx.font = 'bold 32px "Libre Baskerville"';
+        ctx.fillStyle = '#ffffff';
 
-        // Basic data
-        ctx.fillStyle = '#fff';
-        ctx.font = '18px "Libre Baskerville", Arial';
-        ctx.fillText(`Join When: ${userData?.basicData?.join_when}`, 40, 80);
-        ctx.fillText(`Total Followers: ${userData?.basicData?.followers}`, 40, 110);
-        ctx.fillText(`Total Repositories: ${userData?.basicData?.public_repos}`, 40, 140);
-        ctx.fillText(`Total Repositories Latest: ${userData?.basicData?.repo_latest_total}`, 40, 170);
+        ctx.fillText(
+            `${userData?.basicData?.username}'s GitHub Stats`,
+            50,
+            70
+        );
 
-        // Language data
-        ctx.font = '14px "Libre Baskerville", Arial';
+        // Subtitle
+        ctx.font = '16px "Libre Baskerville"';
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.fillText('Developer Overview & Language Usage', 52, 100);
 
-        const xStart = 350;
-        const yStart = 80;
-        const rowHeight = 25;
-        const colWidth = 155;
+        const stats = [
+            {
+                title: 'Followers',
+                value: userData?.basicData?.followers || 0
+            },
+            {
+                title: 'Repositories',
+                value: userData?.basicData?.public_repos || 0
+            },
+            {
+                title: 'Latest Projects',
+                value: userData?.basicData?.repo_latest_total || 0
+            },
+            {
+                title: 'Joined',
+                value: userData?.basicData?.join_when || 'Unknown'
+            }
+        ];
 
-        userData?.languages?.forEach((item, index) => {
-            const col = index % 2;
-            const row = Math.floor(index / 2);
-            const x = xStart + col * colWidth;
-            const y = yStart + row * rowHeight;
+        let startY = 140;
 
-            const color = languageColors[item?.language] || '#FFFFFF';
+        stats.forEach((item, index) => {
+            const y = startY + index * 60;
 
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.arc(x - 10, y - 5, 5, 0, Math.PI * 2, true);
-            ctx.fill();
+            // Card
+            ctx.fillStyle = 'rgba(255,255,255,0.05)';
+            roundRect(ctx, 45, y, 320, 45, 14, true);
 
-            ctx.fillStyle = '#fff';
-            ctx.fillText(`${item?.language}: ${((item?.count / userData?.basicData?.public_repos) * 100).toFixed(2)}%`, x, y);
+            // Title
+            ctx.font = '15px "Libre Baskerville"';
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.fillText(item.title, 65, y + 20);
+
+            // Value
+            ctx.font = 'bold 18px "Libre Baskerville"';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(String(item.value), 65, y + 38);
         });
 
-        // Generate buffer
-        const buffer = canvas.toBuffer('image/png');
-        return buffer;
+        ctx.fillStyle = 'rgba(255,255,255,0.04)';
+        roundRect(ctx, 400, 130, 450, 235, 18, true);
+
+        ctx.font = 'bold 20px "Libre Baskerville"';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('Top Languages', 425, 165);
+
+        const languages = userData?.languages || [];
+
+        languages.slice(0, 6).forEach((lang, index) => {
+            const y = 205 + index * 28;
+
+            const percent = (
+                (lang.count / userData?.basicData?.public_repos) *
+                100
+            );
+
+            const color = languageColors[lang.language] || '#ffffff';
+
+            // Label
+            ctx.font = '15px "Libre Baskerville"';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(lang.language, 425, y);
+
+            // Background Bar
+            ctx.fillStyle = 'rgba(255,255,255,0.08)';
+            roundRect(ctx, 560, y - 12, 220, 10, 10, true);
+
+            // Progress Bar
+            ctx.fillStyle = color;
+            roundRect(ctx, 560, y - 12, (220 * percent) / 100, 10, 10, true);
+
+            // Percent
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '14px "Libre Baskerville"';
+            ctx.fillText(
+                formatPercent(
+                    lang.count,
+                    userData?.basicData?.public_repos
+                ),
+                790,
+                y
+            );
+        });
+
+        ctx.font = '13px "Libre Baskerville"';
+        ctx.fillStyle = 'rgba(255,255,255,0.45)';
+        ctx.fillText('Generated dynamically with Canvas API', 50, height - 35);
+
+        return canvas.toBuffer('image/png');
     } catch (error) {
         console.error(error);
         return false;
     }
 };
 
-module.exports = { generateStatsSharp, generateStatsCanvas };
+function roundRect(ctx, x, y, width, height, radius, fill = false) {
+    ctx.beginPath();
+
+    ctx.moveTo(x + radius, y);
+
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(
+        x + width,
+        y + height,
+        x + width - radius,
+        y + height
+    );
+
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+
+    ctx.closePath();
+
+    if (fill) ctx.fill();
+}
+
+module.exports = { generateStatsCanvas };
